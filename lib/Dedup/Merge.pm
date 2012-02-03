@@ -10,7 +10,7 @@ with 'Dedup::Databasey';
 
 has 'testmode' => (
     is => 'rw',
-    isa => 'Bool'
+    isa => 'Bool',
     default => 0,
 );
 
