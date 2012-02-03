@@ -8,6 +8,12 @@ use autodie;
 use IPC::Run qw(run);
 with 'Dedup::Databasey';
 
+has 'testmode' => (
+    is => 'rw',
+    isa => 'Bool'
+    default => 0,
+);
+
 sub go {
     my ($self) = @_;
 
@@ -64,10 +70,11 @@ sub full_compare {
     return() if ($file eq $other); # don't compare identical paths
 
     # warn "Comparing $file with $other\n";
-    return unless run('cmp', '--silent', $file, $other);   
+    return unless run('/usr/bin/cmp', '--silent', $file, $other);
 
     my $size = (-s $file);
     say "$size\t$file\t$other";
+    return if $self->testmode;
     unlink($file);
     link($other, $file);
 }

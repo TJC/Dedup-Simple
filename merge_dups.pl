@@ -6,5 +6,6 @@ use Dedup::Merge;
 
 Dedup::Merge->new(
     database => 'checksums.db',
+    testmode => 1,
 )->go;
 
