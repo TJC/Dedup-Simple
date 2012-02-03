@@ -1,29 +1,16 @@
 package Dedup::Build;
 use 5.14.1;
 use Moose;
-use Dedup::Schema;
-require DBD::SQLite;
 use Digest::SHA qw(sha1_hex);
 use IO::File;
 use File::Find;
 use autodie;
-
-has 'database' => (
-    is => 'rw',
-    isa => 'Str',
-    required => 1,
-);
+with 'Dedup::Databasey';
 
 has 'CHUNK_SIZE' => (
     is => 'ro',
     isa => 'Int',
     default => (64*1024),
-);
-
-has 'db' => (
-    is => 'rw',
-    lazy => 1,
-    default => sub { shift->db_connect },
 );
 
 sub run {
@@ -120,11 +107,6 @@ sub process_file {
             }
         );
     }
-}
-
-sub db_connect {
-    my $self = shift;
-    return Dedup::Schema->connect('dbi:SQLite:dbname=' . $self->database);
 }
 
 
