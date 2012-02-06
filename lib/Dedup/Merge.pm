@@ -50,7 +50,9 @@ sub process {
     my @files = grep {
         my @stats = stat $_;
         $stats[3] == 1;
-    } @candidates;
+    }
+    # Files may have disappeared since an earlier backup:
+    grep { -e $_ } @candidates;
 
     # warn "selected files are: " . join(', ', @files) . "\n";
 
