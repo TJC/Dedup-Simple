@@ -1,0 +1,13 @@
+Currently the system never removes deleted files from the checksum database.
+
+I guess I need another pass which does something like:
+
+ for each file in database:
+    delete record from db unless file exists
+
+but it's annoying to have to do that when I've just finished running something
+that already check every file existing file, in the build_db.pl phase.
+
+Maybe that phase should update a run-id on each file in the db, then at the
+end of that phase it can do DELETE FROM files WHERE run < $current_run;
+
