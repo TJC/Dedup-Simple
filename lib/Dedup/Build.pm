@@ -13,6 +13,12 @@ has 'CHUNK_SIZE' => (
     default => (64*1024),
 );
 
+has 'verbose' => (
+    is => 'rw',
+    isa => 'Bool',
+    default => 0,
+);
+
 sub run {
     my ($self, $root_dir) = @_;
 
@@ -33,7 +39,8 @@ sub checksum_file_short {
     my ($self, $filename) = @_;
 
     unless (-f $filename) {
-        warn "Not a regular file: $filename\n";
+        warn "Not a regular file: $filename\n"
+            if $self->verbose;
         return;
     }
 
@@ -44,7 +51,8 @@ sub checksum_file_short {
 
     my $size = -s $filename;
     unless ($size > 8192) {
-        warn "Skipping tiny file: $filename\n";
+        warn "Skipping tiny file: $filename\n"
+            if $self->verbose;
         return;
     }
 
@@ -74,13 +82,17 @@ sub checksum_file_short {
 
 sub process_file {
     my ($self, $file) = @_;
+
+    return if (-d $file); # ignore directories!
+
     my @stats = stat $file;
     my $mtime = $stats[9];
     my $size = $stats[7];
 
     my $record = $self->db->resultset('Files')->search({ path => $file })->next;
     if ($record and $record->mtime == $mtime and $record->size == $size) {
-        warn "File already in DB with good size & mtime.\n";
+        warn "File already in DB with good size & mtime.\n"
+            if $self->verbose;
         return;
     }
 
